@@ -1,9 +1,14 @@
-numpy==1.21.5
+numpy==1.23.5
 torch==2.2.0
 torchaudio==2.2.0
 transformers==4.38
 tqdm
 tensorflow==2.15
 tensorflow-io==0.36.0
+nvitop
+sox
+pandas
+pedalboard
+librosa
 #descript-audiotools @ git+https://github.com/descriptinc/lyrebird-audiotools.git@0.7.2
 #einops

@@ -16,7 +16,7 @@ class ConfLoader():
         try:
             with open(os.path.join(self.path, m_name+'.json')) as f:
                 self.model = json.load(f)
-        except e:
+        except Exception as e:
             raise ValueError("Model config not found! {}/{}.json".format(self.path, m_name))
         self.self_update()
 

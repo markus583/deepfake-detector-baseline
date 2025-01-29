@@ -1,0 +1,50 @@
+FROM registry.deez.re/research/python-gpu-12-0:latest
+
+# Debugging: Check CUDA installation in the base image
+RUN echo "CUDA_HOME: $CUDA_HOME"
+RUN echo "PATH: $PATH"
+RUN echo "LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
+# RUN which nvcc
+# RUN nvcc --version
+RUN ls -l $CUDA_HOME/bin/
+RUN ls -l $CUDA_HOME/lib64/
+
+# Install packages (be cautious about conflicts)
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    curl libgoogle-perftools4 screen tmux \
+    file \
+    sox \
+    libsox-dev \
+    libsox-fmt-all
+
+# Try to explicitly set environment variables if not present
+ENV CUDA_HOME=/usr/local/cuda 
+# Or the correct path from base image
+ENV PATH=$CUDA_HOME/bin:$PATH
+ENV LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+
+# Verify environment variables after setting them
+RUN echo "After setting env vars:"
+RUN echo "CUDA_HOME: $CUDA_HOME"
+RUN echo "PATH: $PATH"
+RUN echo "LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
+RUN which ptxas
+RUN find / -name "libdevice*" 2>/dev/null
+
+ENV LD_PRELOAD /usr/lib/x86_64-linux-gnu/libtcmalloc.so.4
+
+# BOILERPLATE STUFF
+USER deezer
+
+WORKDIR /workspace
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+EXPOSE 8000 5678
+
+ENV TERM xterm-256color
+
+CMD ["tmux", "new-session", "-d", "-s", "whisper", "bash"]
